@@ -96,7 +96,9 @@ class NoPS(HTMLParser):
             self.in_title = False
             self.title += data
         else:
-            self.content_string += ' ' + self._normalize_space(data)
+            data = self._normalize_space(data)
+            if data != '':
+                self.content_string += ' ' + self._normalize_space(data)
 
     def dumps(self, url):
         hs = HeadingStructure()
