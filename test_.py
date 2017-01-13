@@ -242,7 +242,7 @@ class TestNoPS(unittest.TestCase):
             'mandatory': True,
         }]], jobj['headings'])
 
-    def test_extract_url(self):
+    def test_extract_url_as_heading(self):
         nops = NoPS()
         jstr = nops.dumps('http://a/b/c')
         jobj = json.loads(jstr)
