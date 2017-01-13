@@ -52,16 +52,16 @@ class NoPS(HTMLParser):
             if self.seen_base is False:
                 self.seen_base = True
                 attrs = dict(attrs)
-                if 'href' in attrs:
+                if 'href' in attrs and attrs['href'] is not None:
                     self.base_href = attrs['href']
         elif tag == 'img':
             attrs = dict(attrs)
             if self.EXTRACT_TEXT_OF_IMG:
                 string = ''
-                if 'src' in attrs:
+                if 'src' in attrs and attrs['src'] is not None:
                     string += self._tokenize_url(attrs['src'])
                 string += ' '
-                if 'alt' in attrs:
+                if 'alt' in attrs and attrs['alt'] is not None:
                     string += attrs['alt']
                 string = self._normalize_space(string)
                 if string != '':
