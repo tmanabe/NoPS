@@ -2,13 +2,23 @@
 # coding: utf-8
 
 
-from heading_structure import Headings
-from heading_structure import HeadingStructure
-from heading_structure import Range
-from heading_structure import RangeList
 from html.parser import HTMLParser
+from json import dumps
 import re
 import urllib
+
+
+class Range(dict):
+    FROM, TO = 'from', 'to'
+    MANDATORY = 'mandatory'
+
+
+class HeadingStructure(dict):
+    CHILDREN = 'children'
+    CONTENTS = 'contents'
+    HEADINGS = 'headings'
+    RAW_STRING = 'rawString'
+    _URL, BASE_URL = 'URL', 'baseURL'
 
 
 class NoPS(HTMLParser):
@@ -102,8 +112,8 @@ class NoPS(HTMLParser):
 
     def dumps(self, url):
         hs = HeadingStructure()
-        hs[HeadingStructure.HEADINGS] = Headings()
-        hs[HeadingStructure.CONTENTS] = RangeList()
+        hs[HeadingStructure.HEADINGS] = []
+        hs[HeadingStructure.CONTENTS] = []
         hs[HeadingStructure.CHILDREN] = []
         hs[HeadingStructure.RAW_STRING] = ''
         if self.EXTRACT_URL:
@@ -125,16 +135,23 @@ class NoPS(HTMLParser):
                 merged_url = self._tokenize_url(merged_url)
                 merged_url = self._normalize_space(merged_url)
                 hs[HeadingStructure.RAW_STRING] += merged_url
-            h = RangeList()
+            h = []
             heading_to = len(hs[HeadingStructure.RAW_STRING])
-            r = Range().loadd({Range.TO: heading_to}, ubound=heading_to)
+            r = Range()
+            r.update({
+                Range.FROM: 0,
+                Range.TO: heading_to,
+                Range.MANDATORY: True,
+            })
             h.append(r)
             hs[HeadingStructure.HEADINGS].append(h)
         hs[HeadingStructure.RAW_STRING] += self.content_string
         contents_to = len(hs[HeadingStructure.RAW_STRING])
-        r = Range().loadd({
+        r = Range()
+        r.update({
             Range.FROM: heading_to + 1,
-            Range.TO: contents_to,
-        }, ubound=contents_to)
+            Range.TO: max(heading_to + 1, contents_to),
+            Range.MANDATORY: True,
+        })
         hs[HeadingStructure.CONTENTS].append(r)
-        return hs.dumps()
+        return dumps(hs)
