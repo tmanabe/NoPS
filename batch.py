@@ -42,6 +42,6 @@ else:
                 print('Warning: File exists. Skipping. (URL: %s)' % url)
                 continue
             nops = NoPS()
-            nops.feed(request.urlopen(url).read().decode('utf-8'))
+            nops.feed(request.urlopen(url).read().decode('utf-8', 'replace'))
             with open(p, 'w') as fo:
                 fo.write(nops.dumps(url))
